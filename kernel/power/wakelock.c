@@ -193,6 +193,7 @@ static struct wakelock *wakelock_lookup_add(const char *name, size_t len,
 		kfree(wl);
 		return ERR_PTR(-ENOMEM);
 	}
+
 	wl->ws->last_time = ktime_get();
 
 	rb_link_node(&wl->node, parent, node);
