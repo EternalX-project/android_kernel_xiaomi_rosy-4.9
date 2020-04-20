@@ -32,6 +32,10 @@
 	};
 };
 
+&apps_iommu {
+	qcom,no-aarch64;
+};
+
 &other_ext_mem {
 	reg = <0x0 0x84A00000 0x0 0x1E00000>;
 };
