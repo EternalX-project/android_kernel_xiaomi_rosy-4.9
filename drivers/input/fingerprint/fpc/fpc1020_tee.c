@@ -100,74 +100,7 @@ static int fpc1020_request_named_gpio(struct fpc1020_data *fpc1020,
 		const char *label, int *gpio);
 static int hw_reset(struct  fpc1020_data *fpc1020);
 
-
-/*
-static int vreg_setup(struct fpc1020_data *fpc1020, const char *name,
-	bool enable)
-{
-	size_t i;
-	int rc;
-	struct regulator *vreg;
-	struct device *dev = fpc1020->dev;
-
-	for (i = 0; i < ARRAY_SIZE(fpc1020->vreg); i++) {
-		const char *n = vreg_conf[i].name;
-
-		if (!strncmp(n, name, strlen(n)))
-			goto found;
-	}
-
-	dev_err(dev, "Regulator %s not found\n", name);
-
-	return -EINVAL;
-
-found:
-	vreg = fpc1020->vreg[i];
-	if (enable) {
-		if (!vreg) {
-			vreg = regulator_get(dev, name);
-			if (IS_ERR(vreg)) {
-				dev_err(dev, "Unable to get %s\n", name);
-				return PTR_ERR(vreg);
-			}
-		}
-
-		if (regulator_count_voltages(vreg) > 0) {
-			rc = regulator_set_voltage(vreg, vreg_conf[i].vmin,
-					vreg_conf[i].vmax);
-			if (rc)
-				dev_err(dev,
-					"Unable to set voltage on %s, %d\n",
-					name, rc);
-		}
-
-		rc = regulator_set_optimum_mode(vreg, vreg_conf[i].ua_load);
-		if (rc < 0)
-			dev_err(dev, "Unable to set current on %s, %d\n",
-					name, rc);
-
-		rc = regulator_enable(vreg);
-		if (rc) {
-			dev_err(dev, "error enabling %s: %d\n", name, rc);
-			regulator_put(vreg);
-			vreg = NULL;
-		}
-		fpc1020->vreg[i] = vreg;
-	} else {
-		if (vreg) {
-			if (regulator_is_enabled(vreg)) {
-				regulator_disable(vreg);
-				dev_dbg(dev, "disabled %s\n", name);
-			}
-			regulator_put(vreg);
-			fpc1020->vreg[i] = NULL;
-		}
-		rc = 0;
-	}
-
-	return rc;
-}
-*/
+static struct kernfs_node *soc_symlink = NULL;
 
 /**
  * sysfs node for controlling clocks.
@@ -669,6 +602,9 @@ static int fpc1020_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	int rc = 0;
+	struct device *platform_dev;
+	struct kobject *soc_kobj;
+	struct kernfs_node *devices_node, *soc_node;
 
 
 	struct device_node *np = dev->of_node;
@@ -769,14 +705,27 @@ static int fpc1020_probe(struct platform_device *pdev)
 		goto exit;
 	}
 
-    #if 0
-	if (of_property_read_bool(dev->of_node, "fpc,enable-on-boot")) {
-		dev_info(dev, "Enabling hardware\n");
-		(void)device_prepare(fpc1020, true);
+	if (!dev->parent || !dev->parent->parent) {
+		dev_warn(dev, "Parent platform device not found\n");
+		goto exit;
 	}
 
-	rc = hw_reset(fpc1020);
-	#endif
+	platform_dev = dev->parent->parent;
+	if (strcmp(kobject_name(&platform_dev->kobj), "platform")) {
+		dev_warn(dev, "Parent platform device name not matched: %s\n",
+			 kobject_name(&platform_dev->kobj));
+		goto exit;
+	}
+
+	devices_node = platform_dev->kobj.sd->parent;
+	soc_kobj = &dev->parent->kobj;
+	soc_node = soc_kobj->sd;
+	kernfs_get(soc_node);
+	soc_symlink = kernfs_create_link(devices_node, kobject_name(soc_kobj), soc_node);
+	kernfs_put(soc_node);
+
+	if (IS_ERR(soc_symlink))
+		dev_warn(dev, "Unable to create soc symlink\n");
 
 	dev_info(dev, "%s: ok\n", __func__);
 	fpc1020->fb_black = false;
@@ -792,6 +741,9 @@ exit:
 static int fpc1020_remove(struct platform_device *pdev)
 {
 	struct fpc1020_data *fpc1020 = platform_get_drvdata(pdev);
+
+	if (!IS_ERR(soc_symlink))
+		kernfs_remove_by_name(soc_symlink->parent, soc_symlink->name);
 
 	fb_unregister_client(&fpc1020->fb_notifier);
 	sysfs_remove_group(&pdev->dev.kobj, &attribute_group);
