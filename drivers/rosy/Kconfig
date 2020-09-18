@@ -10,4 +10,6 @@ config MACH_XIAOMI_ROSY
 	help
 	  Support for rosy platform & DT overlay
 
+source "drivers/rosy/soc/Kconfig"
+
 endmenu

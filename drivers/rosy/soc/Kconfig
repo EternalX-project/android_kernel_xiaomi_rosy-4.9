@@ -1,0 +1,57 @@
+menuconfig SOC_ROSY
+	bool "SoC drivers"
+	help
+	  Say Y here, and a list of supported SoC drivers will be
+	  displayed. This option doesn't affect the kernel.
+
+	  If unsure, say Y.
+
+if SOC_ROSY
+
+config SERIAL_NUM_ROSY
+	bool "Serial number proc interface"
+	depends on SOC_ROSY
+	help
+	  Say Y here to enable proc interface used for reading of CPU
+	  serial number.
+
+	  If unsure, say Y.
+
+config SECBOOT_FUSE_ROSY
+	bool "Secure boot fuse proc interface"
+	depends on SOC_ROSY
+	help
+	  Say Y here to enable proc interface used for reading of CPU
+	  secure boot fuse setting. The interface is located in
+	  /proc/secboot_fuse_reg
+
+	  If unsure, say Y.
+
+config CPUMAXFREQ_ROSY
+	bool "CPUMAXFREQ proc interface"
+	depends on SOC_ROSY
+	help
+	  Say Y here to enable proc interface used for getting the maximum
+	  frequency supported by the CPU.
+
+	  If unsure, say Y.
+
+config BOOT_INFO_ROSY
+	bool "Bootloader information interface"
+	depends on SOC_ROSY
+	help
+	  Say Y here to enable interface used to collect information from
+	  the bootloader of ROSY and pass it to the kernel.
+
+	  If unsure, say Y.
+
+config HARDWARE_INFO_ROSY
+	bool "Hardware information interface"
+	depends on SOC_ROSY
+	help
+	  Say Y here to enable interface used to collect information
+	  about the hardware of ROSY.
+
+	  If unsure, say Y.
+
+endif
