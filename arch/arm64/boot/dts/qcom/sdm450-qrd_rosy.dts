@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2019 XiaoMi, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+
+/* the order is crucial and important, do not modify */
+#include "rosy/dummy-labels.dtsi" /* label resolving to evade having to include msm-pmi8950 (rosy uses pmi8940) */
+#include <dt-bindings/input/input.h> /* needed by rosy */
+#include "sdm450.dtsi" /* main dtsi */
+#include "msm-pmi8940.dtsi" /* main dtsi of rosy */
+#include "msm8953-qrd-sku3.dtsi" /* main dtsi */
+#include "rosy/dummy-labels-cleanup.dtsi" /* cleanup resolved labels */
+
+/ {
+	model = "Qualcomm Technologies, Inc. SDM450 + PMI8940 QRD";
+	compatible = "qcom,sdm450-qrd", "qcom,sdm450", "qcom,qrd";
+	qcom,board-id = <0x1000b 1>;
+};
+
+/* ROSY nodes */
+&soc {
+	led_flash0: qcom,camera-flash@0 {
+		cell-index = <0>;
+		compatible = "qcom,camera-flash";
+		qcom,flash-type = <1>;
+		qcom,flash-source = <&pmi8940_flash0>;
+		qcom,torch-source = <&pmi8940_torch0>;
+		qcom,switch-source = <&pmi8940_switch>;
+	};
+
+	led_flash1: qcom,camera-flash@1 {
+		cell-index = <1>;
+		compatible = "qcom,camera-flash";
+		qcom,flash-type = <1>;
+		qcom,flash-source = <&pmi8940_flash1>;
+		qcom,torch-source = <&pmi8940_torch1>;
+		qcom,switch-source = <&pmi8940_switch>;
+	};
+};
+
+/* ROSY overlay */
+#include "rosy/msm8953-audio_rosy.dtsi"
+#include "rosy/msm8953-camera-sensor-qrd_rosy.dtsi"
+#include "rosy/msm8953-mdss-panels_rosy.dtsi"
+#include "rosy/msm8953-pinctrl_rosy.dtsi"
+#include "rosy/msm8953-pm_rosy.dtsi"
+#include "rosy/msm8953-qrd_rosy.dtsi"
+#include "rosy/msm8953-qrd-sku3_rosy.dtsi"
+#include "rosy/msm8953-regulator_rosy.dtsi"
+#include "rosy/msm8953_rosy.dtsi"
+#include "rosy/msm-pm8953_rosy.dtsi"
+#include "rosy/msm-pmi8940_rosy.dtsi"

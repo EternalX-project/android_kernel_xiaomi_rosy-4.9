@@ -1,0 +1,17 @@
+/ {
+	dummy_label: dummy_label { };
+};
+
+&dummy_label {
+	pmi8950_charger: dummy@0 {
+		dummy = <1>;
+	};
+
+	pmi8950_fg: dummy@0 {
+		dummy = <1>;
+	};
+
+	led_flash0: dummy@0 {
+		dummy = <1>;
+	};
+};

@@ -1,0 +1,72 @@
+&spmi_bus {
+	qcom,pmi8940@3 {
+		labibb: qpnp-labibb-regulator {
+			ibb_regulator: qcom,ibb@dc00 {
+				/delete-property/
+					qcom,qpnp-ibb-use-default-voltage;
+				qcom,qpnp-ibb-init-lcd-voltage = <5700000>;
+			};
+
+			lab_regulator: qcom,lab@de00 {
+				/delete-property/
+					qcom,qpnp-lab-use-default-voltage;
+				qcom,qpnp-lab-init-lcd-voltage = <5700000>;
+			};
+		};
+	};
+};
+
+&mdss_dsi0 {
+	/delete-property/ qcom,dsi-pref-prim-pan;
+	/delete-property/ pinctrl-0;
+	/delete-property/ pinctrl-1;
+	/delete-property/ qcom,platform-te-gpio;
+	qcom,dsi-pref-prim-pan = <&dsi_ft8613_ebbg_5p7_720p_video>;
+	qcom,dsi-pref-sub-pan = <&dsi_ft8006m_boe_5p7_720p_video>;
+	qcom,dsi-pref-sub1-pan = <&dsi_ft8613_csot_5p7_720p_video>;
+	pinctrl-0 = <&mdss_dsi_active>;
+	pinctrl-1 = <&mdss_dsi_suspend>;
+	vdd-supply = <&pm8953_l17>;
+	iovdd_gpio-supply = <&iovdd_gpio_vreg>;
+};
+
+&int_codec {
+	status = "okay";
+};
+
+&pm8953_diangu_dig {
+	status = "okay";
+};
+
+&pm8953_diangu_analog {
+	status = "okay";
+};
+
+&ext_codec {
+	status = "disabled";
+};
+
+&slim_msm {
+	status = "disabled";
+};
+
+&dai_slim {
+	status = "disabled";
+};
+
+&wcd9xxx_intc {
+	status = "disabled";
+};
+
+&clock_audio {
+	status = "disabled";
+};
+
+&wcd9335 {
+	status = "disabled";
+};
+
+&wcd_rst_gpio {
+	status = "disabled";
+};
+

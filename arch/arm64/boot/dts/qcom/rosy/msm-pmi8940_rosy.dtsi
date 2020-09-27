@@ -1,0 +1,59 @@
+&pmi8940_charger {
+	qcom,battery-data = <&qrd_batterydata>;
+	qcom,float-voltage-mv = <4400>;
+	qcom,chg-inhibit-fg;
+	qcom,thermal-mitigation = <2000 1800 1500 1200 1000 0>;
+	qcom,vchg_sns-vadc = <&pmi8940_vadc>;
+	qcom,vchg-adc-channel-id = <3>;
+	qcom,customize-cool-low-limit = <0>;
+	qcom,customize-cool-high-limit = <50>;
+	qcom,fastchg-current-customize-cool = <300>;
+	qcom,fastchg-current-bat-cool = <900>;
+	qcom,fastchg-current-ma = <2000>;
+	qcom,override-usb-current;
+	status = "okay";
+};
+
+&pmi8940_fg {
+	qcom,battery-data = <&qrd_batterydata>;
+	qcom,cold-bat-decidegc = <(0)>;
+	qcom,cool-bat-decidegc = <(150)>;
+	qcom,hot-bat-decidegc = <550>;
+	qcom,warm-bat-decidegc = <450>;
+	qcom,warm-bat-india-decidegc = <500>;
+	qcom,fg-iterm-ma = <230>;
+	qcom,fg-chg-iterm-ma = <200>;
+	qcom,resume-soc = <99>;
+	qcom,resume-soc-raw = <253>;
+	qcom,vbat-estimate-diff-mv = <100>;
+	qcom,fg-cutoff-voltage-mv = <3400>;
+	qcom,fg-cc-cv-threshold-mv = <4390>;
+	qcom,cl-max-increment-deciperc = <1>;
+	qcom,cl-max-decrement-deciperc = <1>;
+	qcom,fg-delta-soc = <2>;
+	qcom,bad-battery-detection-enable;
+	qcom,hold-soc-while-full;
+	qcom,thermal-coefficients = [DA 86 F0 50 08 3C];
+};
+
+&wled {
+	qcom,en-cabc;
+};
+
+&pmi8940_flash0 {
+	qcom,current = <1000>;
+};
+
+&pmi8940_flash1 {
+	qcom,current = <800>;
+};
+
+&pmi8940_torch1 {
+	qcom,current = <75>;
+};
+
+&pmi_haptic {
+	/delete-property/ qcom,en-brake;
+	qcom,actuator-type = "erm";
+	qcom,vmax-mv = <2900>;
+};

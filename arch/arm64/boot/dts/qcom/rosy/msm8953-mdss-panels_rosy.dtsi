@@ -1,0 +1,52 @@
+#include "dsi-panel-ft8613-ebbg-5p7-720p-video.dtsi"
+#include "dsi-panel-ft8006m-boe-5p7-720p-video.dtsi"
+#include "dsi-panel-ft8613-csot-5p7-720p-video.dtsi"
+
+&dsi_panel_pwr_supply {
+	qcom,panel-supply-entry@1 {
+		reg = <1>;
+		qcom,supply-name = "iovdd_gpio";
+		qcom,supply-min-voltage = <1800000>;
+		qcom,supply-max-voltage = <1800000>;
+		qcom,supply-enable-load = <100000>;
+		qcom,supply-disable-load = <100>;
+		qcom,supply-post-on-sleep = <10>;
+	};
+
+	qcom,panel-supply-entry@2 {
+		reg = <2>;
+		qcom,supply-name = "lab";
+		qcom,supply-min-voltage = <4600000>;
+		qcom,supply-max-voltage = <6000000>;
+		qcom,supply-enable-load = <100000>;
+		qcom,supply-disable-load = <100>;
+	};
+
+	qcom,panel-supply-entry@3 {
+		reg = <3>;
+		qcom,supply-name = "ibb";
+		qcom,supply-min-voltage = <4600000>;
+		qcom,supply-max-voltage = <6000000>;
+		qcom,supply-enable-load = <100000>;
+		qcom,supply-disable-load = <100>;
+		qcom,supply-post-on-sleep = <10>;
+	};
+};
+
+&dsi_ft8613_ebbg_5p7_720p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,qpnp-ibb-init-lcd-voltage = <5800000>;
+	qcom,qpnp-lab-init-lcd-voltage = <5800000>;
+};
+
+&dsi_ft8006m_boe_5p7_720p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,qpnp-ibb-init-lcd-voltage = <6000000>;
+	qcom,qpnp-lab-init-lcd-voltage = <6000000>;
+};
+
+&dsi_ft8613_csot_5p7_720p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,qpnp-ibb-init-lcd-voltage = <5800000>;
+	qcom,qpnp-lab-init-lcd-voltage = <5800000>;
+};
