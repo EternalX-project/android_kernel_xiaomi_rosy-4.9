@@ -46,6 +46,9 @@ static struct mdss_dsi_data *mdss_dsi_res;
 #define DSI_ENABLE_PC_LATENCY PM_QOS_DEFAULT_VALUE
 
 static struct pm_qos_request mdss_dsi_pm_qos_request;
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+bool is_Lcm_Present = false;
+#endif
 
 void mdss_dump_dsi_debug_bus(u32 bus_dump_flag,
 	u32 **dump_mem)
@@ -405,6 +408,10 @@ end:
 	return ret;
 }
 
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+int tp_gesture_onoff = 0;
+EXPORT_SYMBOL(tp_gesture_onoff);
+#endif
 static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 {
 	int ret = 0;
@@ -3028,11 +3035,18 @@ static struct device_node *mdss_dsi_find_panel_of_node(
 			}
 		}
 
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+		is_Lcm_Present = true;
+#endif
+
 		return dsi_pan_node;
 	}
 end:
 	if (strcmp(panel_name, NONE_PANEL))
 		dsi_pan_node = mdss_dsi_pref_prim_panel(pdev);
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	is_Lcm_Present = true;
+#endif
 exit:
 	return dsi_pan_node;
 }

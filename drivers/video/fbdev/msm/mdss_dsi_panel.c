@@ -22,6 +22,9 @@
 #include <linux/qpnp/pwm.h>
 #include <linux/err.h>
 #include <linux/string.h>
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+#include <linux/hardware_info.h>
+#endif
 
 #include "mdss_dsi.h"
 #include "mdss_debug.h"
@@ -34,6 +37,11 @@
 #define DEFAULT_MDP_TRANSFER_TIME 14000
 
 #define VSYNC_DELAY msecs_to_jiffies(17)
+
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+char Lcm_name[HARDWARE_MAX_ITEM_LONGTH];
+extern bool is_Lcm_Present;
+#endif
 
 DEFINE_LED_TRIGGER(bl_led_trigger);
 
@@ -361,11 +369,17 @@ disp_en_gpio_err:
 	return rc;
 }
 
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+extern int tp_gesture_onoff;
+#endif
 int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 	struct mdss_panel_info *pinfo = NULL;
 	int i, rc = 0;
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	unsigned long timeout = jiffies;
+#endif
 
 	if (pdata == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
@@ -522,11 +536,24 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			usleep_range(100, 110);
 			gpio_free(ctrl_pdata->disp_en_gpio);
 		}
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+		if (((tp_gesture_onoff) || (pinfo->pwr_off_rst_pull_high))
+				&& pinfo->panel_dead == 0)
+			gpio_set_value((ctrl_pdata->rst_gpio), 1);
+		else
+			gpio_set_value((ctrl_pdata->rst_gpio), 0);
+#else
 		gpio_set_value((ctrl_pdata->rst_gpio), 0);
+#endif
 		gpio_free(ctrl_pdata->rst_gpio);
 		if (gpio_is_valid(ctrl_pdata->mode_gpio))
 			gpio_free(ctrl_pdata->mode_gpio);
 	}
+
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	pr_info("%s: mdss_dsi_panel_reset time=%ums \n", __func__,
+		jiffies_to_msecs(jiffies-timeout));
+#endif
 
 exit:
 	return rc;
@@ -1170,7 +1197,11 @@ static int mdss_dsi_parse_dcs_cmds(struct device_node *np,
 	while (len >= sizeof(*dchdr)) {
 		dchdr = (struct dsi_ctrl_hdr *)bp;
 		dchdr->dlen = ntohs(dchdr->dlen);
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+		if (dchdr->dlen > len || dchdr->dlen < 0) {
+#else
 		if (dchdr->dlen > len) {
+#endif
 			pr_err("%s: dtsi cmd=%x error, len=%d",
 				__func__, dchdr->dtype, dchdr->dlen);
 			goto exit_free;
@@ -2011,7 +2042,11 @@ static void mdss_dsi_parse_esd_params(struct device_node *np,
 	pinfo->esd_check_enabled = of_property_read_bool(np,
 		"qcom,esd-check-enabled");
 
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	if ((!pinfo->esd_check_enabled) || (!is_Lcm_Present))
+#else
 	if (!pinfo->esd_check_enabled)
+#endif
 		return;
 
 	ctrl->status_mode = ESD_MAX;
@@ -2927,6 +2962,12 @@ static int mdss_panel_parse_dt(struct device_node *np,
 	mdss_dsi_parse_reset_seq(np, pinfo->rst_seq, &(pinfo->rst_seq_len),
 		"qcom,mdss-dsi-reset-sequence");
 
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	rc = of_property_read_u32(np, "qcom,mdss-dsi-pwr-off-rst-pull-high",
+				&tmp);
+	pinfo->pwr_off_rst_pull_high = (!rc ? tmp : 0);
+#endif
+
 	mdss_dsi_parse_dcs_cmds(np, &ctrl_pdata->off_cmds,
 		"qcom,mdss-dsi-off-command", "qcom,mdss-dsi-off-command-state");
 
@@ -2994,7 +3035,16 @@ int mdss_dsi_panel_init(struct device_node *node,
 	} else {
 		pr_info("%s: Panel Name = %s\n", __func__, panel_name);
 		strlcpy(&pinfo->panel_name[0], panel_name, MDSS_MAX_PANEL_LEN);
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+		strcpy(Lcm_name, panel_name);
+#endif
 	}
+
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	if (!is_Lcm_Present)
+		strcpy(Lcm_name, "");
+#endif
+
 	rc = mdss_panel_parse_dt(node, ctrl_pdata);
 	if (rc) {
 		pr_err("%s:%d panel dt parse failed\n", __func__, __LINE__);
@@ -3010,7 +3060,13 @@ int mdss_dsi_panel_init(struct device_node *node,
 	ctrl_pdata->post_panel_on = mdss_dsi_post_panel_on;
 	ctrl_pdata->off = mdss_dsi_panel_off;
 	ctrl_pdata->low_power_config = mdss_dsi_panel_low_power_config;
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	if (is_Lcm_Present) {
+		ctrl_pdata->panel_data.set_backlight = mdss_dsi_panel_bl_ctrl;
+	}
+#else
 	ctrl_pdata->panel_data.set_backlight = mdss_dsi_panel_bl_ctrl;
+#endif
 	ctrl_pdata->panel_data.apply_display_setting =
 			mdss_dsi_panel_apply_display_setting;
 	ctrl_pdata->switch_mode = mdss_dsi_panel_switch_mode;

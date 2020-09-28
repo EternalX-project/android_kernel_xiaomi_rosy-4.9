@@ -651,6 +651,9 @@ struct mdss_panel_info {
 	u32 out_format;
 	u32 rst_seq[MDSS_DSI_RST_SEQ_LEN];
 	u32 rst_seq_len;
+#ifdef CONFIG_MACH_XIAOMI_ROSY
+	u32 pwr_off_rst_pull_high;
+#endif
 	u32 vic; /* video identification code */
 	struct mdss_rect roi;
 	int pwm_pmic_gpio;
