@@ -34,14 +34,6 @@
 	status = "okay";
 };
 
-&pm8953_diangu_dig {
-	status = "okay";
-};
-
-&pm8953_diangu_analog {
-	status = "okay";
-};
-
 &ext_codec {
 	status = "disabled";
 };
