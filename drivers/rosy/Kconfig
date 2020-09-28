@@ -1,0 +1,13 @@
+#
+# ROSY drivers
+#
+menu "Xiaomi Redmi 5 (ROSY) Drivers"
+
+config MACH_XIAOMI_ROSY
+	bool "Xiaomi Redmi 5 (ROSY) platform"
+	select CONFIG_ARCH_MSM8953
+	select CONFIG_ARCH_SDM450
+	help
+	  Support for rosy platform & DT overlay
+
+endmenu
