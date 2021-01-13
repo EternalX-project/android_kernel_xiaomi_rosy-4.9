@@ -252,6 +252,7 @@
 
 &i2c_3 {
 	status = "ok";
+	qcom,disable-dma;
 };
 
 &sdc2_cmd_on {
