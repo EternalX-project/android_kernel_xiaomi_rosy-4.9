@@ -714,6 +714,18 @@ config QCOM_COMMAND_DB
 	  Command DB queries shared memory by key string for shared system
 	  resources
 
+config SERIAL_NUM
+       bool "Enable Serial Number Proc Interface"
+         help
+         Provide a interface for reading CPU serial number
+
+
+config SECBOOT_FUSE
+       bool "Enable Secure boot fuse Proc Interface"
+       help
+         Provide a interface for reading CPU secure boot fuse setting. Interface located in
+         /proc/secboot_fuse_reg
+
 config MSM_PERFORMANCE
 	tristate "msm performacne driver to support userspace hotplug requests"
 	default n
@@ -881,6 +893,11 @@ config MSM_REMOTEQDSS
 	  events. Provide a sysfs interface for debug tools to dynamically
 	  enable/disable these events. Interface located in
 	  /sys/class/remoteqdss.
+
+config CPUMAXFREQ
+	bool "Enable CPUMAXFREQ Proc Interface"
+	help
+	  Provide a interface for getting the maximum frequency supported by cpu core
 
 config QSEE_IPC_IRQ_BRIDGE
 	tristate "QSEE IPC Interrupt Bridge"
