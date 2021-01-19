@@ -1,0 +1,12 @@
+#
+# Focaltech Touchscreen driver configuration
+#
+
+config TOUCHSCREEN_FT8716
+        bool "FT8716 touchscreen driver"
+		depends on I2C
+		default n
+		help
+		  Say Y here to compile touchscreen drivers for FocalTech FT8716.
+		  If unsure, say N.
+

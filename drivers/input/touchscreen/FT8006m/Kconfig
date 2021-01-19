@@ -1,0 +1,12 @@
+#
+# Focaltech Touchscreen driver configuration
+#
+
+config TOUCHSCREEN_FT8006M
+        bool "FT8006M touchscreen driver"
+		depends on I2C
+		default n
+		help
+		  Say Y here to compile touchscreen drivers for FocalTech FT8006M.
+		  If unsure, say N.
+
