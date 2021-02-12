@@ -674,6 +674,8 @@ endif
 
 dtb-$(CONFIG_ARCH_SDM845_VM) += sdm845-vm.dtb
 
+dtb-$(CONFIG_MACH_XIAOMI_ROSY) := sdm450-qrd_rosy.dtb
+
 always		:= $(dtb-y)
 subdir-y	:= $(dts-dirs)
 clean-files	:= *.dtb
