@@ -242,6 +242,22 @@ config ARCH_SDM439
 	  This enables support for the sdm439 chipset. If you do not
 	  wish to build a kernel that runs on this chipset, say 'N' here.
 
+config MACH_XIAOMI
+	bool "Xiaomi devices"
+	help
+	  This enables support for Xiaomi devices.
+
+if MACH_XIAOMI
+
+config MACH_XIAOMI_ROSY
+	bool "Enable Support for Xiaomi Redmi 5 (rosy)"
+	select ARCH_MSM8953
+	select ARCH_SDM450
+	help
+	  This enables support for Xiaomi Redmi 5 (rosy)
+
+endif
+
 config ARCH_ROCKCHIP
 	bool "Rockchip Platforms"
 	select ARCH_HAS_RESET_CONTROLLER
