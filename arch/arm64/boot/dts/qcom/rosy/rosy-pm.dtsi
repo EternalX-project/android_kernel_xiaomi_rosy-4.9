@@ -231,7 +231,7 @@
 			};
 		};
 
-		pmi_haptic: qcom,haptic@c000 {
+		pmi_haptic: qcom,haptics@c000 {
 			/delete-property/ qcom,en-brake;
 
 			qcom,actuator-type = <1>;
