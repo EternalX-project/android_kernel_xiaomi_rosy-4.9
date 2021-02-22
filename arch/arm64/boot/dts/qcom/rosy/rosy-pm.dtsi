@@ -215,10 +215,11 @@
 			};
 		};
 
-		pmi_haptic: qcom,haptic@c000 {
-			qcom,actuator-type = <erm>;
-			qcom,vmax-mv = <2900>;
+		pmi_haptic: qcom,haptics@c000 {
 			/delete-property/ qcom,en-brake;
+
+			qcom,actuator-type = <1>;
+			qcom,vmax-mv = <2900>;
 		};    
 	};
 };
