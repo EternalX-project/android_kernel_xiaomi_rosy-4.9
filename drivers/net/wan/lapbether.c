@@ -201,8 +201,6 @@ static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
 	struct net_device *dev;
 	int size = skb->len;
 
-	skb->protocol = htons(ETH_P_X25);
-
 	ptr = skb_push(skb, 2);
 
 	*ptr++ = size % 256;
@@ -212,6 +210,8 @@ static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
 	ndev->stats.tx_bytes += size;
 
 	skb->dev = dev = lapbeth->ethdev;
+
+	skb->protocol = htons(ETH_P_DEC);
 
 	skb_reset_network_header(skb);
 
@@ -286,15 +286,12 @@ static int lapbeth_open(struct net_device *dev)
 		return -ENODEV;
 	}
 
-	netif_start_queue(dev);
 	return 0;
 }
 
 static int lapbeth_close(struct net_device *dev)
 {
 	int err;
-
-	netif_stop_queue(dev);
 
 	if ((err = lapb_unregister(dev)) != LAPB_OK)
 		pr_err("lapb_unregister error: %d\n", err);

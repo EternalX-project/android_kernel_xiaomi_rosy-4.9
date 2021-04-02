@@ -118,8 +118,6 @@ static void vfio_pci_probe_mmaps(struct vfio_pci_device *vdev)
 	int bar;
 	struct vfio_pci_dummy_resource *dummy_res;
 
-	INIT_LIST_HEAD(&vdev->dummy_resources_list);
-
 	for (bar = PCI_STD_RESOURCES; bar <= PCI_STD_RESOURCE_END; bar++) {
 		res = vdev->pdev->resource + bar;
 
@@ -392,6 +390,19 @@ static void vfio_pci_release(void *device_data)
 	if (!(--vdev->refcnt)) {
 		vfio_spapr_pci_eeh_release(vdev->pdev);
 		vfio_pci_disable(vdev);
+		mutex_lock(&vdev->igate);
+		if (vdev->err_trigger) {
+			eventfd_ctx_put(vdev->err_trigger);
+			vdev->err_trigger = NULL;
+		}
+		mutex_unlock(&vdev->igate);
+
+		mutex_lock(&vdev->igate);
+		if (vdev->req_trigger) {
+			eventfd_ctx_put(vdev->req_trigger);
+			vdev->req_trigger = NULL;
+		}
+		mutex_unlock(&vdev->igate);
 	}
 
 	mutex_unlock(&driver_lock);
@@ -1390,8 +1401,8 @@ static int vfio_pci_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 
 	mutex_unlock(&vdev->vma_lock);
 
-	if (remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
-			    vma->vm_end - vma->vm_start, vma->vm_page_prot))
+	if (io_remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
+			       vma->vm_end - vma->vm_start, vma->vm_page_prot))
 		ret = VM_FAULT_SIGBUS;
 
 up_out:
@@ -1534,7 +1545,7 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	vdev->irq_type = VFIO_PCI_NUM_IRQS;
 	mutex_init(&vdev->igate);
 	spin_lock_init(&vdev->irqlock);
-
+	INIT_LIST_HEAD(&vdev->dummy_resources_list);
 	mutex_init(&vdev->vma_lock);
 	INIT_LIST_HEAD(&vdev->vma_list);
 	init_rwsem(&vdev->memory_lock);
