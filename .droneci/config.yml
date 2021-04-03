@@ -13,9 +13,9 @@ steps:
       - cd eternalx_ci
       - git clone https://github.com/EternalX-project/android_kernel_xiaomi_rosy-4.9.git --depth=1
       - git clone https://github.com/zexceed12300/EternalX-flasher --depth=1
-      - git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/ -b android10-dev --depth=1
-      - git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b ndk-release-r16 --depth=1
-      - git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b ndk-release-r16 --depth=1
+      - git clone https://github.com/kdrag0n/proton-clang --depth=1
+      - git clone https://github.com/kdrag0n/aarch64-elf-gcc --depth=1
+      - git clone https://github.com/kdrag0n/arm-eabi-gcc --depth=1
       - pip3 install -r requirements.txt  
       - python3 ci_build.py --build --tele-notifier --tele-check --verbose --tele-tz Asia/Jakarta
     image: fadlyas/kernel_dockerfile:latest
