@@ -172,7 +172,7 @@
 	qcom,pmi8940@2 {
 		qpnp_smbcharger: qcom,qpnp-smbcharger {
 			qcom,battery-data = <&qrd_batterydata>;
-			qcom,float-voltage-mv = <4400>;
+			qcom,float-voltage-mv = <4200>;
 			qcom,chg-inhibit-fg;
 			qcom,thermal-mitigation = <2000 1800 1500 1200 1000 0>;
 			qcom,vchg_sns-vadc = <&pmi8940_vadc>;
@@ -185,10 +185,10 @@
 			qcom,battery-data = <&qrd_batterydata>;
 			qcom,fg-iterm-ma = <230>;
 			qcom,fg-chg-iterm-ma = <200>;
-			qcom,resume-soc = <99>;
+			qcom,resume-soc = <95>;
 			qcom,vbat-estimate-diff-mv = <100>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
-			qcom,fg-cc-cv-threshold-mv = <4390>;
+			qcom,fg-cc-cv-threshold-mv = <4200>;
 			qcom,bad-battery-detection-enable;
 			qcom,hold-soc-while-full;
 			qcom,thermal-coefficients = [DA 86 F0 50 08 3C];

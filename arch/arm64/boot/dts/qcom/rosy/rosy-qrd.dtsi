@@ -185,12 +185,6 @@
 	qcom,detect-dpdm-floating;
 };
 
-&blsp1_uart0 {
-	status = "ok";
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart_console_active>;
-};
-
 &sdhc_1 {
 	/* device core power supply */
 	vdd-supply = <&pm8953_l8>;
