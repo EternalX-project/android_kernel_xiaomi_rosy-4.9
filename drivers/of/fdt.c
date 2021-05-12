@@ -1195,7 +1195,8 @@ int __init __weak early_init_dt_reserve_memory_arch(phys_addr_t base,
 #if defined(CONFIG_ARCH_SDM670) || defined(CONFIG_ARCH_SDM845)
 		return memblock_remove(base, size);
 #else
-		return memblock_mark_nomap(base, size);
+        if (nomap)
+		    return memblock_mark_nomap(base, size);
 #endif
 	}
 	return memblock_reserve(base, size);
