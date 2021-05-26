@@ -8194,6 +8194,7 @@ static int smbchg_check_chg_version(struct smbchg_chip *chip)
 	return 0;
 }
 
+/*
 static void rerun_hvdcp_det_if_necessary(struct smbchg_chip *chip)
 {
 	enum power_supply_type usb_supply_type;
@@ -8233,7 +8234,7 @@ static void rerun_hvdcp_det_if_necessary(struct smbchg_chip *chip)
 			pr_err("Couldn't vote for 0 for suspend wa, going ahead rc=%d\n",
 					rc);
 
-		/* Schedule work for HVDCP detection */
+		// Schedule work for HVDCP detection
 		if (!chip->hvdcp_not_supported) {
 			cancel_delayed_work_sync(&chip->hvdcp_det_work);
 			smbchg_stay_awake(chip, PM_DETECT_HVDCP);
@@ -8241,7 +8242,7 @@ static void rerun_hvdcp_det_if_necessary(struct smbchg_chip *chip)
 					msecs_to_jiffies(HVDCP_NOTIFY_MS));
 		}
 	}
-}
+}*/
 
 static int smbchg_probe(struct platform_device *pdev)
 {
@@ -8567,7 +8568,7 @@ static int smbchg_probe(struct platform_device *pdev)
 		goto unregister_led_class;
 	}
 
-	rerun_hvdcp_det_if_necessary(chip);
+	//rerun_hvdcp_det_if_necessary(chip);
 
 	update_usb_status(chip, is_usb_present(chip), false);
 	dump_regs(chip);
