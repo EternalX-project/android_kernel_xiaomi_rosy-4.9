@@ -34,6 +34,7 @@
 #define DEFAULT_MDP_TRANSFER_TIME 14000
 
 #define VSYNC_DELAY msecs_to_jiffies(17)
+extern bool is_Lcm_Present;
 
 DEFINE_LED_TRIGGER(bl_led_trigger);
 
@@ -361,11 +362,13 @@ disp_en_gpio_err:
 	return rc;
 }
 
+extern int tp_gesture_onoff;
 int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 	struct mdss_panel_info *pinfo = NULL;
 	int i, rc = 0;
+	unsigned long timeout = jiffies;
 
 	if (pdata == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
@@ -522,11 +525,17 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			usleep_range(100, 110);
 			gpio_free(ctrl_pdata->disp_en_gpio);
 		}
-		gpio_set_value((ctrl_pdata->rst_gpio), 0);
+		if (((tp_gesture_onoff) || (pinfo->pwr_off_rst_pull_high)) && pinfo->panel_dead == 0)
+			gpio_set_value((ctrl_pdata->rst_gpio), 1);
+		else
+			gpio_set_value((ctrl_pdata->rst_gpio), 0);
 		gpio_free(ctrl_pdata->rst_gpio);
 		if (gpio_is_valid(ctrl_pdata->mode_gpio))
 			gpio_free(ctrl_pdata->mode_gpio);
 	}
+
+	pr_info("%s: mdss_dsi_panel_reset time=%ums \n", __func__,
+		jiffies_to_msecs(jiffies-timeout));
 
 exit:
 	return rc;
@@ -1170,7 +1179,7 @@ static int mdss_dsi_parse_dcs_cmds(struct device_node *np,
 	while (len >= sizeof(*dchdr)) {
 		dchdr = (struct dsi_ctrl_hdr *)bp;
 		dchdr->dlen = ntohs(dchdr->dlen);
-		if (dchdr->dlen > len) {
+		if (dchdr->dlen > len || dchdr->dlen < 0) {
 			pr_err("%s: dtsi cmd=%x error, len=%d",
 				__func__, dchdr->dtype, dchdr->dlen);
 			goto exit_free;
@@ -2011,7 +2020,7 @@ static void mdss_dsi_parse_esd_params(struct device_node *np,
 	pinfo->esd_check_enabled = of_property_read_bool(np,
 		"qcom,esd-check-enabled");
 
-	if (!pinfo->esd_check_enabled)
+	if ((!pinfo->esd_check_enabled) || (!is_Lcm_Present))
 		return;
 
 	ctrl->status_mode = ESD_MAX;
@@ -2927,6 +2936,10 @@ static int mdss_panel_parse_dt(struct device_node *np,
 	mdss_dsi_parse_reset_seq(np, pinfo->rst_seq, &(pinfo->rst_seq_len),
 		"qcom,mdss-dsi-reset-sequence");
 
+	rc = of_property_read_u32(np, "qcom,mdss-dsi-pwr-off-rst-pull-high",
+				&tmp);
+	pinfo->pwr_off_rst_pull_high = (!rc ? tmp : 0);
+
 	mdss_dsi_parse_dcs_cmds(np, &ctrl_pdata->off_cmds,
 		"qcom,mdss-dsi-off-command", "qcom,mdss-dsi-off-command-state");
 
@@ -3011,6 +3024,9 @@ int mdss_dsi_panel_init(struct device_node *node,
 	ctrl_pdata->off = mdss_dsi_panel_off;
 	ctrl_pdata->low_power_config = mdss_dsi_panel_low_power_config;
 	ctrl_pdata->panel_data.set_backlight = mdss_dsi_panel_bl_ctrl;
+	if (is_Lcm_Present) {
+		ctrl_pdata->panel_data.set_backlight = mdss_dsi_panel_bl_ctrl;
+	}
 	ctrl_pdata->panel_data.apply_display_setting =
 			mdss_dsi_panel_apply_display_setting;
 	ctrl_pdata->switch_mode = mdss_dsi_panel_switch_mode;

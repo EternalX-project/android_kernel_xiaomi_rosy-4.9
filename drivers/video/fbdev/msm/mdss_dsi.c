@@ -46,6 +46,7 @@ static struct mdss_dsi_data *mdss_dsi_res;
 #define DSI_ENABLE_PC_LATENCY PM_QOS_DEFAULT_VALUE
 
 static struct pm_qos_request mdss_dsi_pm_qos_request;
+bool is_Lcm_Present = false;
 
 void mdss_dump_dsi_debug_bus(u32 bus_dump_flag,
 	u32 **dump_mem)
@@ -391,6 +392,8 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 					__func__);
 	}
 
+	usleep(500);
+
 	if (mdss_dsi_pinctrl_set_state(ctrl_pdata, false))
 		pr_debug("reset disable: pinctrl not enabled\n");
 
@@ -404,6 +407,9 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 end:
 	return ret;
 }
+
+int tp_gesture_onoff = 0;
+EXPORT_SYMBOL(tp_gesture_onoff);
 
 static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 {
@@ -3028,11 +3034,14 @@ static struct device_node *mdss_dsi_find_panel_of_node(
 			}
 		}
 
+		is_Lcm_Present = true;
+
 		return dsi_pan_node;
 	}
 end:
 	if (strcmp(panel_name, NONE_PANEL))
 		dsi_pan_node = mdss_dsi_pref_prim_panel(pdev);
+	is_Lcm_Present = false;
 exit:
 	return dsi_pan_node;
 }
