@@ -1,0 +1,25 @@
+--- 
+kind: pipeline
+name: EternalX-Pipeline
+
+clone:
+  depth: 1
+
+steps: 
+  - name: Building
+    commands:
+      - apt-get -y update && apt-get -y upgrade && apt-get -y install bc build-essential bison flex zip gcc clang libc6 curl libstdc++6 git wget libssl-dev && apt-get -y install p7zip-full python python2 python3 python3-pip tzdata
+      - git clone https://github.com/zexceed12300/eternalx_ci -b EternalX-project/android_kernel_xiaomi_rosy-4.9 --depth=1
+      - cd eternalx_ci
+      - git clone https://github.com/EternalX-project/android_kernel_xiaomi_rosy-4.9.git -b lineage-18.1 --depth=1
+      - git clone https://github.com/zexceed12300/EternalX-flasher --depth=1
+      - git clone https://github.com/EternalX-project/EternalX-Clang.git -b amd64 --depth=1
+      - git clone https://github.com/EternalX-project/aarch64-linux-gnu.git -b amd64 --depth=1
+      - git clone https://github.com/EternalX-project/arm-linux-gnueabi.git -b amd64 --depth=1
+      - pip3 install -r requirements.txt  
+      - python3 ci_build.py --build --tele-notifier --tele-check --verbose --tele-tz Asia/Jakarta
+    image: fadlyas/kernel_dockerfile:latest
+
+trigger:
+  branch:
+    - lineage-18.1
