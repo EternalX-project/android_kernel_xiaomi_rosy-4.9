@@ -33,26 +33,6 @@ static int32_t msm_sensor_driver_platform_probe(struct platform_device *pdev);
 /* Static declaration */
 static struct msm_sensor_ctrl_t *g_sctrl[MAX_CAMERAS];
 
-static const char *module_info[] = 
-{
-	"Unkonw",
-	"Sunny",
-	"Unkonw",
-	"Semco",
-	"Unkonw",
-	"Unkonw",
-	"Qtech",
-	"Ofilm",
-	"Unkonw",
-	"Unkonw",
-	"Unkonw",
-	"Unkonw",
-	"Unknow",
-	"Unknow",
-	"Unknow",
-	"Liteon",
-};
-
 ssize_t kobj_fusion_id_show_back(struct kobject *kobject, struct attribute *attr, char *buf);
 struct attribute camera_attr_back = {
         .name = "fusion_id_back",
@@ -117,71 +97,6 @@ ssize_t kobj_fusion_id_show_front(struct kobject *kobject, struct attribute *att
 }
 
 struct kobject kobj_front;
-
-static uint16_t fusion_read_id_ov5675(struct msm_sensor_ctrl_t *s_ctrl)
-{
-	uint16_t data[15] = {0};
-	uint16_t *p = NULL;
-	uint8_t i;
-	struct msm_camera_i2c_client *sensor_i2c_client;
-	sensor_i2c_client = s_ctrl->sensor_i2c_client;
-
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x0100, 0x01, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x5001, 0x02, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d84, 0xC0, 1);
-
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d88, 0x70, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d89, 0x00, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d8a, 0x70, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d8b, 0x0f, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d81, 0x01, 1);
-	mdelay(10);
-
-	p = data;
-
-	memset(fusionid_front, 0, sizeof(fusionid_front));
-	for (i = 0; i < 15; i++) {
-	    sensor_i2c_client->i2c_func_tbl->i2c_read(sensor_i2c_client, 0x7000+i, p+i, 1);
-	    CDBG("data[%d]=%x\n", i, data[i]);
-	    sprintf(fusionid_front + strlen(fusionid_front), "%u", data[i]);
-	}
-	CDBG("fusionid_front=%s\n", fusionid_front);
-	return 0;
-}
-
-static uint16_t fusion_read_id_ov13855(struct msm_sensor_ctrl_t *s_ctrl)
-{
-	uint16_t data[16] = {0};
-	uint16_t *p = NULL;
-	uint16_t temp1 = 0x0;
-	uint8_t i;
-	struct msm_camera_i2c_client *sensor_i2c_client;
-	sensor_i2c_client = s_ctrl->sensor_i2c_client;
-
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x0100, 0x01, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_read(sensor_i2c_client, 0x5000, &temp1, 1);
-
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x5000, (0x00 & 0x10) | (temp1 & (~0x10)), 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d84, 0xC0, 1);
-
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d88, 0x70, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d89, 0x00, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d8a, 0x70, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d8b, 0x0f, 1);
-	sensor_i2c_client->i2c_func_tbl->i2c_write(sensor_i2c_client, 0x3d81, 0x01, 1);
-	mdelay(10);
-
-	p = data;
-
-	memset(fusionid_back, 0, sizeof(fusionid_back));
-	for (i = 0; i < 15; i++) {
-	    sensor_i2c_client->i2c_func_tbl->i2c_read(sensor_i2c_client, 0x7000+i, p+i, 1);
-	    CDBG("data[%d]=%x\n", i, data[i]);
-	    sprintf(fusionid_back + strlen(fusionid_back), "%u", data[i]);
-	}
-	CDBG("fusionid_back=%s\n", fusionid_back);
-	return 0;
-}
 
 static int msm_sensor_platform_remove(struct platform_device *pdev)
 {
