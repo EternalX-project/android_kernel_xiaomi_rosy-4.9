@@ -30,6 +30,8 @@
 #include <linux/jump_label.h>
 #include <linux/kernel.h>
 
+extern const char *machine_name;
+
 /* CPU feature register tracking */
 enum ftr_type {
 	FTR_EXACT,			/* Use a predefined safe value */
