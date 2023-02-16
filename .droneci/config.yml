@@ -16,8 +16,8 @@ steps:
       - git clone https://github.com/EternalX-project/EternalX-Clang.git -b amd64 --depth=1
       - git clone https://github.com/EternalX-project/aarch64-linux-gnu.git -b amd64 --depth=1
       - git clone https://github.com/EternalX-project/arm-linux-gnueabi.git -b amd64 --depth=1
-      - pip3 install -r requirements.txt  
-      - python3 ci_build.py --build --tele-notifier --tele-check --verbose --tele-tz Asia/Jakarta
+      - sudo pip3 install -r requirements.txt  
+      - sudo python3 ci_build.py --build --tele-notifier --tele-check --verbose --tele-tz Asia/Jakarta
     image: fadlyas/kernel_dockerfile:latest
 
 trigger:
