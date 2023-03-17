@@ -466,7 +466,6 @@ static void wcd_correct_swch_plug(struct work_struct *work)
 	 * no need to enabale micbias/pullup here
 	 */
 
-	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_FSM_EN, 0);
 	wcd_enable_curr_micbias(mbhc, WCD_MBHC_EN_MB);
 
 	/* Enable HW FSM */
